@@ -23,6 +23,9 @@ python-decouple==3.8
 # API
 djangorestframework==3.14.0
 
+# Sentiment Analysis (offline)
+vaderSentiment==3.3.2
+
 # Dev tools
 django-extensions==3.2.3
 

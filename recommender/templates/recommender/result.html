@@ -9,11 +9,11 @@
     
     <link rel="shortcut icon" href="{% static 'logo.ico' %}">
     
-    <!-- Fonts -->
+    <!-- Fonts: display + UI -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+
     <style>
         * {
             margin: 0;
@@ -22,69 +22,66 @@
         }
 
         :root {
-            --primary-color: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary-color: #8b5cf6;
-            --background: #0f172a;
-            --surface: #1e293b;
-            --surface-light: #334155;
-            --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --success: #10b981;
-            --border-radius: 12px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --accent: #e8b84a;
+            --accent-soft: rgba(232, 184, 74, 0.22);
+            --accent-hover: #f0c96a;
+            --ink: #0d0b0a;
+            --surface: rgba(18, 16, 22, 0.72);
+            --surface-elevated: rgba(28, 24, 32, 0.85);
+            --glass-border: rgba(255, 248, 235, 0.12);
+            --text-primary: #faf6ef;
+            --text-secondary: #c4bbb0;
+            --border-radius: 16px;
+            --border-radius-sm: 10px;
+            --transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            --font-ui: 'DM Sans', system-ui, sans-serif;
+            --font-display: 'Fraunces', Georgia, serif;
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, var(--background) 0%, #1a1f3a 100%);
+            font-family: var(--font-ui);
             color: var(--text-primary);
             min-height: 100vh;
-            line-height: 1.6;
+            line-height: 1.65;
+            background-color: var(--ink);
+            background-image:
+                linear-gradient(165deg, rgba(8, 6, 12, 0.88) 0%, rgba(18, 10, 8, 0.82) 45%, rgba(6, 8, 18, 0.9) 100%),
+                url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=2400&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
         }
 
-        /* Animated background */
-        .background-animation {
+        .page-bg-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.05;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(ellipse 120% 80% at 50% -20%, rgba(232, 184, 74, 0.08), transparent 55%);
         }
 
-        .background-animation::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, var(--primary-color) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: backgroundMove 20s linear infinite;
-        }
-
-        @keyframes backgroundMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
+        .header,
+        .results-wrap,
+        .footer {
+            position: relative;
+            z-index: 1;
         }
 
         /* Header */
         .header {
-            background: var(--surface);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 1.5rem 2rem;
+            padding: 1.25rem 1.75rem;
             position: sticky;
             top: 0;
             z-index: 100;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(10, 8, 14, 0.65);
+            backdrop-filter: blur(16px) saturate(1.2);
+            -webkit-backdrop-filter: blur(16px) saturate(1.2);
+            border-bottom: 1px solid var(--glass-border);
         }
 
         .header-content {
-            max-width: 1200px;
+            max-width: 1120px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -99,92 +96,123 @@
             gap: 0.75rem;
             text-decoration: none;
             color: var(--text-primary);
+            font-family: var(--font-display);
             font-weight: 600;
-            transition: var(--transition);
+            font-size: 1.05rem;
+            letter-spacing: 0.02em;
+            transition: color var(--transition);
         }
 
         .logo-link:hover {
-            color: var(--primary-color);
-        }
-
-        .logo-small {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            color: var(--accent);
         }
 
         .back-button {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            background: var(--primary-color);
-            color: white;
+            padding: 0.65rem 1.35rem;
+            background: transparent;
+            color:  rgb(146, 224, 232);
             text-decoration: none;
-            border-radius: var(--border-radius);
-            font-weight: 500;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
             transition: var(--transition);
-            border: none;
+            border: 1px solid rgb(146, 224, 232);
             cursor: pointer;
         }
 
         .back-button:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            background: var(--accent-soft);
+            border-color: var(--accent);
+            color: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
         }
 
-        /* Results Header */
+        /* Outer container + glass panel */
+        .container {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 3.5rem;
+        }
+
+        .content-panel {
+            background: var(--surface);
+            backdrop-filter: blur(20px) saturate(1.15);
+            -webkit-backdrop-filter: blur(20px) saturate(1.15);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow:
+                0 4px 24px rgba(0, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            padding: clamp(1.75rem, 4vw, 2.75rem);
+            overflow: hidden;
+        }
+
+        /* Results header inside panel */
         .results-header {
             text-align: center;
-            padding: 3rem 2rem;
-            animation: fadeInDown 0.6s ease-out;
+            padding: 0 0 2rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--glass-border);
+            animation: fadeInDown 0.65s ease-out;
         }
 
         .results-title {
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+            font-family: var(--font-display);
+            font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+            font-weight: 600;
+            font-optical-sizing: auto;
+            line-height: 1.2;
+            margin-bottom: 0.65rem;
+            letter-spacing: -0.02em;
         }
 
         .searched-movie {
-            color: var(--primary-color);
+            color: rgb(146, 224, 232);
             display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background: rgba(99, 102, 241, 0.1);
+            padding: 0.2rem 0.85rem;
+            background: var(--accent-soft);
             border-radius: 8px;
+            border: 1px solid rgba(232, 184, 74, 0.25);
         }
 
         .results-subtitle {
             color: var(--text-secondary);
-            font-size: 1.1rem;
-            margin-top: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 0.45rem;
         }
 
-        /* Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 1rem 4rem;
+        .results-subtitle + .results-subtitle {
+            font-size: 0.92rem;
+            font-weight: 400;
+            opacity: 0.92;
         }
 
         /* Movie Grid */
         .movies-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.5rem;
-            animation: fadeInUp 0.6s ease-out 0.2s both;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.35rem;
+            animation: fadeInUp 0.65s ease-out 0.15s both;
         }
 
         /* Movie Card */
         .movie-card {
-            background: var(--surface);
+            background: var(--surface-elevated);
             border-radius: var(--border-radius);
-            padding: 1.75rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: var(--transition);
+            padding: 1.6rem 1.65rem;
+            border: 1px solid var(--glass-border);
+            transition: opacity 0.45s ease-out, transform 0.45s ease-out, border-color var(--transition), box-shadow var(--transition);
             position: relative;
             overflow: hidden;
+            opacity: 0;
+            transform: translateY(28px);
         }
 
         .movie-card::before {
@@ -193,17 +221,25 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), rgba(232, 184, 74, 0.35));
             transform: scaleX(0);
             transform-origin: left;
-            transition: var(--transition);
+            transition: transform var(--transition);
         }
 
         .movie-card:hover {
-            transform: translateY(-8px);
-            border-color: var(--primary-color);
-            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.2);
+            border-color: rgba(232, 184, 74, 0.35);
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45);
+        }
+
+        .movie-card.animate-in:hover {
+            transform: translateY(-6px);
+        }
+
+        .movie-card.animate-in {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .movie-card:hover::before {
@@ -214,113 +250,265 @@
             position: absolute;
             top: 1rem;
             right: 1rem;
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            background:  rgb(146, 224, 232);
+            color: var(--ink);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-family: var(--font-ui);
             font-weight: 700;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            font-size: 0.85rem;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
         }
 
         .movie-icon {
-            font-size: 2rem;
-            margin-bottom: 1rem;
+            font-size: 1.85rem;
+            margin-bottom: 0.85rem;
             display: block;
+            filter: grayscale(0.2);
         }
 
         .movie-title {
-            font-size: 1.25rem;
+            font-family: var(--font-display);
+            font-size: 1.22rem;
             font-weight: 600;
             margin-bottom: 1rem;
             color: var(--text-primary);
-            line-height: 1.4;
-            padding-right: 50px;
+            line-height: 1.35;
+            padding-right: 48px;
         }
 
         .movie-details {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
-            margin-bottom: 1.25rem;
+            gap: 0.45rem;
+            margin-bottom: 1.15rem;
         }
 
         .movie-detail {
             display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
+            align-items: flex-start;
+            gap: 0.55rem;
+            font-size: 0.88rem;
             color: var(--text-secondary);
+            font-weight: 500;
         }
 
         .detail-icon {
-            width: 20px;
+            width: 22px;
+            flex-shrink: 0;
             text-align: center;
+            color:  rgb(146, 224, 232);
         }
 
         .movie-actions {
             display: flex;
-            gap: 0.75rem;
+            gap: 0.65rem;
             flex-wrap: wrap;
+        }
+
+        .smart-actions {
+            margin-top: 0.85rem;
+            padding-top: 0.85rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .watched-row {
+            display: flex;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .watched-btn {
+            flex: 1;
+            min-width: 160px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            padding: 0.7rem 1.1rem;
+            border-radius: var(--border-radius-sm);
+            font-weight: 700;
+            font-size: 0.82rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .watched-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .watched-btn.is-watched {
+            background: var(--accent-soft);
+            border-color: rgba(232, 184, 74, 0.45);
+            color: var(--accent);
+        }
+
+        .rating-review {
+            margin-top: 0.85rem;
+            display: none;
+        }
+
+        .rating-review.visible {
+            display: block;
+        }
+
+        .rr-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.65rem;
+        }
+
+        .rr-row {
+            display: grid;
+            grid-template-columns: 130px 1fr;
+            gap: 0.65rem;
+            align-items: center;
+        }
+
+        .rr-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .rr-select,
+        .rr-textarea {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(0, 0, 0, 0.25);
+            color: var(--text-primary);
+            padding: 0.65rem 0.75rem;
+            font-family: var(--font-ui);
+            transition: var(--transition);
+        }
+
+        .rr-textarea {
+            min-height: 84px;
+            resize: vertical;
+        }
+
+        .rr-select:focus,
+        .rr-textarea:focus {
+            outline: none;
+            border-color: rgba(232, 184, 74, 0.45);
+            box-shadow: 0 0 0 3px rgba(232, 184, 74, 0.12);
+        }
+
+        .rr-actions {
+            display: flex;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+            margin-top: 0.25rem;
+        }
+
+        .rr-save {
+            flex: 1;
+            min-width: 160px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            padding: 0.7rem 1.1rem;
+            border-radius: var(--border-radius-sm);
+            border: 1px solid rgba(232, 184, 74, 0.45);
+            background: var(--accent);
+            color: var(--ink);
+            font-weight: 800;
+            font-size: 0.82rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .rr-save:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .rr-status {
+            margin-top: 0.35rem;
+            min-height: 1.1rem;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        .rr-status.error {
+            color: #fca5a5;
         }
 
         .movie-link {
             flex: 1;
-            min-width: 120px;
+            min-width: 118px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.25rem;
-            border-radius: var(--border-radius);
+            gap: 0.45rem;
+            padding: 0.7rem 1.1rem;
+            border-radius: var(--border-radius-sm);
             text-decoration: none;
-            font-weight: 500;
-            font-size: 0.9rem;
+            font-weight: 600;
+            font-size: 0.82rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
             transition: var(--transition);
-            border: 2px solid;
+            border: 1px solid transparent;
         }
 
         .link-primary {
-            background: var(--primary-color);
-            border-color: var(--primary-color);
-            color: white;
+            background:  rgb(146, 224, 232);
+            border-color:  rgb(146, 224, 232);
+            color: var(--ink);
         }
 
         .link-primary:hover {
-            background: var(--primary-dark);
-            border-color: var(--primary-dark);
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
             transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(232, 184, 74, 0.25);
         }
 
         .link-secondary {
-            background: transparent;
-            border-color: var(--surface-light);
+            background: rgba(255, 255, 255, 0.04);
+            border-color: var(--glass-border);
             color: var(--text-secondary);
         }
 
         .link-secondary:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
+            border-color: var(--accent);
+            color: var(--accent);
             transform: translateY(-2px);
         }
 
         /* Footer */
         .footer {
             text-align: center;
-            padding: 2rem 1rem;
+            padding: 2rem 1.25rem;
             color: var(--text-secondary);
-            font-size: 0.875rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.82rem;
+            font-weight: 500;
+            border-top: 1px solid var(--glass-border);
+            background: rgba(8, 6, 12, 0.4);
+            backdrop-filter: blur(8px);
         }
 
-        /* Animations */
         @keyframes fadeInDown {
             from {
                 opacity: 0;
-                transform: translateY(-30px);
+                transform: translateY(-22px);
             }
             to {
                 opacity: 1;
@@ -331,7 +519,7 @@
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(22px);
             }
             to {
                 opacity: 1;
@@ -339,41 +527,27 @@
             }
         }
 
-        /* Scroll-based animation for cards */
-        .movie-card {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-        }
-
-        .movie-card.animate-in {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        @keyframes cardAppear {
-            from {
-                opacity: 0;
-                transform: scale(0.95) translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        /* Responsive Design */
         @media (max-width: 768px) {
+            body {
+                background-attachment: scroll;
+            }
+
             .header {
-                padding: 1rem;
+                padding: 1rem 1.1rem;
             }
 
             .header-content {
                 justify-content: center;
             }
 
+            .content-panel {
+                border-radius: 18px;
+                padding: 1.35rem 1.15rem;
+            }
+
             .results-header {
-                padding: 2rem 1rem;
+                padding-bottom: 1.5rem;
+                margin-bottom: 1.5rem;
             }
 
             .movies-grid {
@@ -381,7 +555,7 @@
             }
 
             .movie-card {
-                padding: 1.5rem;
+                padding: 1.35rem;
             }
 
             .movie-actions {
@@ -391,23 +565,33 @@
             .movie-link {
                 width: 100%;
             }
+
+            .rr-row {
+                grid-template-columns: 1fr;
+            }
         }
 
-        /* No results state */
         .no-results {
             text-align: center;
-            padding: 4rem 2rem;
+            padding: 3rem 1.5rem;
             color: var(--text-secondary);
         }
 
+        .no-results h2 {
+            font-family: var(--font-display);
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
         .no-results-icon {
-            font-size: 4rem;
+            font-size: 3.5rem;
             margin-bottom: 1rem;
         }
     </style>
 </head>
 <body>
-    <div class="background-animation"></div>
+    <div class="page-bg-overlay" aria-hidden="true"></div>
 
     <!-- Header -->
     <header class="header">
@@ -421,72 +605,111 @@
         </div>
     </header>
 
-    <!-- Results Header -->
-    <div class="results-header">
-        <h1 class="results-title">
-            Movies like <span class="searched-movie">{{ input_movie_name }}</span>
-        </h1>
-        {% if source_movie %}
-        <p class="results-subtitle">
-            {{ source_movie.production }} | {{ source_movie.rating }} | {{ source_movie.genres }}
-        </p>
-        {% endif %}
-        <p class="results-subtitle">
-            We found {{ total_recommendations|default:"15" }} amazing recommendations for you
-        </p>
-    </div>
-
-    <!-- Main Content -->
-    <main class="container">
-        {% if recommended_movies %}
-        <div class="movies-grid">
-            {% for movie in recommended_movies %}
-            <article class="movie-card">
-                <div class="movie-rank">{{ forloop.counter }}</div>
-                <span class="movie-icon">🎬</span>
-                
-                <h2 class="movie-title">{{ movie.title }}</h2>
-                
-                <div class="movie-details">
-                    <div class="movie-detail">
-                        <span class="detail-icon">⭐</span>
-                        <span>{{ movie.rating }} ({{ movie.votes }} votes)</span>
-                    </div>
-                    <div class="movie-detail">
-                        <span class="detail-icon">📅</span>
-                        <span>{{ movie.release_date }}</span>
-                    </div>
-                    <div class="movie-detail">
-                        <span class="detail-icon">🎭</span>
-                        <span>{{ movie.genres }}</span>
-                    </div>
-                    <div class="movie-detail">
-                        <span class="detail-icon">🏢</span>
-                        <span>{{ movie.production }}</span>
-                    </div>
-                </div>
-
-                <div class="movie-actions">
-                    <a href="{{ movie.google_link }}" target="_blank" rel="noopener noreferrer" class="movie-link link-primary">
-                        🔍 Google
-                    </a>
-                    {% if movie.imdb_link %}
-                    <a href="{{ movie.imdb_link }}" target="_blank" rel="noopener noreferrer" class="movie-link link-secondary">
-                        ⭐ IMDb
-                    </a>
+    <div class="results-wrap">
+        <main class="container">
+            <div class="content-panel">
+                <header class="results-header">
+                    <h1 class="results-title">
+                        Movies like <span class="searched-movie">{{ input_movie_name }}</span>
+                    </h1>
+                    {% if source_movie %}
+                    <p class="results-subtitle">
+                        {{ source_movie.production }} | {{ source_movie.rating }} | {{ source_movie.genres }}
+                    </p>
                     {% endif %}
+                    <p class="results-subtitle">
+                        We found {{ total_recommendations|default:"15" }} amazing recommendations for you
+                    </p>
+                </header>
+
+                {% if recommended_movies %}
+                <div class="movies-grid">
+                    {% for movie in recommended_movies %}
+                    <article class="movie-card">
+                        <div class="movie-rank">{{ forloop.counter }}</div>
+                        <span class="movie-icon">🎬</span>
+
+                        <h2 class="movie-title">{{ movie.title }}</h2>
+
+                        <div class="movie-details">
+                            <div class="movie-detail">
+                                <span class="detail-icon">⭐</span>
+                                <span>{{ movie.rating }} ({{ movie.votes }} votes)</span>
+                            </div>
+                            <div class="movie-detail">
+                                <span class="detail-icon">📅</span>
+                                <span>{{ movie.release_date }}</span>
+                            </div>
+                            <div class="movie-detail">
+                                <span class="detail-icon">🎭</span>
+                                <span>{{ movie.genres }}</span>
+                            </div>
+                            <div class="movie-detail">
+                                <span class="detail-icon">🏢</span>
+                                <span>{{ movie.production }}</span>
+                            </div>
+                        </div>
+
+                        <div class="movie-actions">
+                            <a href="{{ movie.google_link }}" target="_blank" rel="noopener noreferrer" class="movie-link link-primary">
+                                🔍 Google
+                            </a>
+                            {% if movie.imdb_link %}
+                            <a href="{{ movie.imdb_link }}" target="_blank" rel="noopener noreferrer" class="movie-link link-secondary">
+                                ⭐ IMDb
+                            </a>
+                            {% endif %}
+                        </div>
+
+                        <div class="smart-actions">
+                            <div class="watched-row">
+                                <button
+                                    type="button"
+                                    class="watched-btn"
+                                    data-movie-title="{{ movie.title|escapejs }}"
+                                >
+                                    👁️ Mark as Watched
+                                </button>
+                            </div>
+
+                            <div class="rating-review" data-rr-for="{{ movie.title|escapejs }}">
+                                <div class="rr-grid">
+                                    <div class="rr-row">
+                                        <div class="rr-label">Your rating</div>
+                                        <select class="rr-select" aria-label="Your rating (1 to 5)">
+                                            <option value="">Select…</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                        </select>
+                                    </div>
+                                    <div class="rr-row">
+                                        <div class="rr-label">Your review</div>
+                                        <textarea class="rr-textarea" placeholder="Write a short review (optional)"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="rr-actions">
+                                    <button type="button" class="rr-save">💾 Save rating/review</button>
+                                </div>
+                                <div class="rr-status" role="status" aria-live="polite"></div>
+                            </div>
+                        </div>
+                    </article>
+                    {% endfor %}
                 </div>
-            </article>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="no-results">
-            <div class="no-results-icon">😕</div>
-            <h2>No recommendations found</h2>
-            <p>We couldn't find any recommendations for this movie. Please try another one.</p>
-        </div>
-        {% endif %}
-    </main>
+                {% else %}
+                <div class="no-results">
+                    <div class="no-results-icon">😕</div>
+                    <h2>No recommendations found</h2>
+                    <p>We couldn't find any recommendations for this movie. Please try another one.</p>
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
@@ -503,6 +726,44 @@
     <script>
         // Smooth scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        async function postJson(url, payload) {
+            const csrftoken = getCookie('csrftoken');
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken || ''
+                },
+                body: JSON.stringify(payload || {})
+            });
+            let data = null;
+            try {
+                data = await res.json();
+            } catch (e) {
+                data = null;
+            }
+            if (!res.ok) {
+                const msg = data && data.error ? data.error : 'Request failed';
+                throw new Error(msg);
+            }
+            return data;
+        }
 
         // Scroll-based animation for cards
         const observerOptions = {
@@ -537,6 +798,82 @@
                         this.style.transform = '';
                     }, 100);
                 }
+            });
+        });
+
+        // Smart system: watched -> enable rating/review
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.watched-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const title = btn.getAttribute('data-movie-title') || '';
+                    if (!title) return;
+
+                    const rr = btn.closest('.smart-actions')?.querySelector('.rating-review');
+                    const setUi = (watched) => {
+                        btn.classList.toggle('is-watched', watched);
+                        btn.textContent = watched ? '✅ Watched' : '👁️ Mark as Watched';
+                        if (rr) rr.classList.toggle('visible', watched);
+                    };
+
+                    try {
+                        const watchedNow = !btn.classList.contains('is-watched');
+                        btn.disabled = true;
+                        await postJson('/api/watched/', { title: title, watched: watchedNow });
+                        setUi(watchedNow);
+                    } catch (err) {
+                        if (rr) {
+                            const status = rr.querySelector('.rr-status');
+                            if (status) {
+                                status.classList.add('error');
+                                status.textContent = err && err.message ? err.message : 'Could not update watched status.';
+                            }
+                        }
+                    } finally {
+                        btn.disabled = false;
+                    }
+                });
+            });
+
+            document.querySelectorAll('.rating-review').forEach(rr => {
+                const saveBtn = rr.querySelector('.rr-save');
+                const select = rr.querySelector('.rr-select');
+                const textarea = rr.querySelector('.rr-textarea');
+                const status = rr.querySelector('.rr-status');
+                const title = rr.getAttribute('data-rr-for') || rr.closest('.smart-actions')?.querySelector('.watched-btn')?.getAttribute('data-movie-title') || '';
+
+                if (!saveBtn || !select || !textarea || !status || !title) return;
+
+                saveBtn.addEventListener('click', async () => {
+                    status.classList.remove('error');
+                    status.textContent = '';
+                    try {
+                        saveBtn.disabled = true;
+                        const payload = {
+                            title: title,
+                            rating: select.value,
+                            review: textarea.value
+                        };
+                        const res = await postJson('/api/review/', payload);
+                        if (res && res.fake_review) {
+                            const fr = res.fake_review;
+                            const label = (fr.label || '').toLowerCase();
+                            const score = typeof fr.score === 'number' ? Math.round(fr.score * 100) : null;
+                            if (label === 'fake') {
+                                status.classList.add('error');
+                                status.textContent = `Saved — ⚠ likely fake review (${score ?? 'n/a'}%). ${Array.isArray(fr.reasons) ? fr.reasons.join(', ') : ''}`;
+                            } else {
+                                status.textContent = `Saved — ✓ likely real (${score ?? 'n/a'}%).`;
+                            }
+                        } else {
+                            status.textContent = 'Saved.';
+                        }
+                    } catch (err) {
+                        status.classList.add('error');
+                        status.textContent = err && err.message ? err.message : 'Could not save.';
+                    } finally {
+                        saveBtn.disabled = false;
+                    }
+                });
             });
         });
     </script>

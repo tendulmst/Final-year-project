@@ -55,7 +55,7 @@
             min-height: 100vh;
             line-height: 1.6;
             overflow-x: hidden;
-            background-image: url("{% static 'images/theater.jpg' %}"); 
+            background-image: url("{% static 'images/back4.jpg' %}"); 
             background-size: cover;
             background-position: center; 
             background-repeat: no-repeat;
@@ -113,7 +113,7 @@
         }
 
         h1 {
-            font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            font-family:Verdana, Geneva, Tahoma, sans-serif;
             font-size: clamp(2rem, 5vw, 3.5rem);
             font-weight: 700;
             margin-bottom: 0.5rem;
@@ -191,7 +191,15 @@
             margin-bottom: 1.5rem;
         }
 
+        .search-row {
+            display: flex;
+            align-items: stretch;
+            gap: 0.65rem;
+        }
+
         .search-input {
+            flex: 1;
+            min-width: 0;
             width: 100%;
             padding: 1rem 1.25rem;
             font-size: 1rem;
@@ -201,6 +209,84 @@
             color: var(--text-primary);
             transition: var(--transition);
             font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+
+        .voice-search-btn {
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            padding: 0.65rem 0.85rem;
+            min-width: 48px;
+            border: 2px solid var(--surface-light);
+            border-radius: var(--border-radius);
+            background: linear-gradient(145deg, var(--surface) 0%, var(--surface-light) 100%);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: var(--transition);
+            font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .voice-search-btn svg {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+
+        .voice-search-btn:hover:not(:disabled) {
+            border-color: var(--primary-color);
+            color: #fff;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .voice-search-btn:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .voice-search-btn.listening {
+            border-color: var(--error);
+            background: rgba(239, 68, 68, 0.18);
+            color: #fecaca;
+            animation: voicePulse 1.1s ease-in-out infinite;
+        }
+
+        .voice-search-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .voice-search-btn .voice-btn-label {
+            display: none;
+        }
+
+        @keyframes voicePulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35); }
+            50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        }
+
+        .voice-status {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            min-height: 1.25rem;
+        }
+
+        .voice-status.active {
+            color: var(--primary-color);
+        }
+
+        @media (min-width: 520px) {
+            .voice-search-btn {
+                padding: 0.65rem 1rem;
+            }
+            .voice-search-btn .voice-btn-label {
+                display: inline;
+            }
         }
 
         .search-input:focus {
@@ -519,6 +605,7 @@
             .loading-title {
                 font-size: 1.25rem;
             }
+
         }
     </style>
 </head>
@@ -556,20 +643,73 @@
             <label for="movie_name" class="search-label">
                 🎬 Search for a movie
             </label>
+
+            <div style="display:flex; justify-content:center; margin: 0.25rem 0 1rem;">
+                <a href="/fake-review/" style="
+                    display:inline-flex;
+                    align-items:center;
+                    gap:0.5rem;
+                    padding:0.55rem 0.9rem;
+                    border-radius:999px;
+                    border:1px solid rgba(146, 224, 232, 0.65);
+                    color: rgb(146, 224, 232);
+                    text-decoration:none;
+                    background: rgba(0,0,0,0.18);
+                    backdrop-filter: blur(10px);
+                    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+                    font-weight: 600;
+                ">
+                    🛡️ Fake Review Detector
+                </a>
+                <a href="/assistant/" style="
+                    margin-left:0.6rem;
+                    display:inline-flex;
+                    align-items:center;
+                    gap:0.5rem;
+                    padding:0.55rem 0.9rem;
+                    border-radius:999px;
+                    border:1px solid rgba(146, 224, 232, 0.65);
+                    color: rgb(146, 224, 232);
+                    text-decoration:none;
+                    background: rgba(0,0,0,0.18);
+                    backdrop-filter: blur(10px);
+                    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+                    font-weight: 600;
+                ">
+                    💬 AI Movie Assistant
+                </a>
+            </div>
             
             <form method="POST" id="searchForm">
                 {% csrf_token %}
                 <div class="search-container">
-                    <input 
-                        type="text" 
-                        id="movie_name" 
-                        name="movie_name"
-                        class="search-input"
-                        placeholder="Start typing a movie name..."
-                        value="{{ input_movie_name|default:'' }}"
-                        required
-                        autocomplete="off"
-                    >
+                    <div class="search-row">
+                        <input 
+                            type="text" 
+                            id="movie_name" 
+                            name="movie_name"
+                            class="search-input"
+                            placeholder="Start typing a movie name..."
+                            value="{{ input_movie_name|default:'' }}"
+                            required
+                            autocomplete="off"
+                        >
+                        <button
+                            type="button"
+                            class="voice-search-btn"
+                            id="voiceSearchBtn"
+                            aria-label="AI voice search: speak a movie title"
+                            aria-pressed="false"
+                            title="Speak a movie title (uses your browser)"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                                <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                            </svg>
+                            <span class="voice-btn-label">AI Voice</span>
+                        </button>
+                    </div>
+                    <p class="voice-status" id="voiceStatus" role="status" aria-live="polite"></p>
                 </div>
                 
                 <button type="submit" class="search-button" id="searchButton">
@@ -679,34 +819,112 @@
     </script>
 
     <script>
-        $(function() {
-            // Autocomplete configuration
-            var movieNames = [
-                {% for movie in all_movie_names %}
-                "{{ movie|escapejs }}",
-                {% endfor %}
-            ];
+        (function () {
+            var input = document.getElementById('movie_name');
+            var btn = document.getElementById('voiceSearchBtn');
+            var statusEl = document.getElementById('voiceStatus');
+            var searchForm = document.getElementById('searchForm');
+            var searchButton = document.getElementById('searchButton');
+            if (!input || !btn) return;
 
-            $("#movie_name").autocomplete({
-                source: movieNames,
-                minLength: 2,
-                delay: 300,
-                select: function(event, ui) {
-                    $(this).val(ui.item.value);
-                    return false;
+            var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                btn.disabled = true;
+                btn.title = 'Voice search is not supported in this browser';
+                if (statusEl) statusEl.textContent = '';
+                return;
+            }
+
+            var recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            var listening = false;
+            var listeningMsg = 'Listening… speak the movie title';
+
+            function setListening(on) {
+                listening = on;
+                btn.classList.toggle('listening', on);
+                btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+                if (statusEl && on) {
+                    statusEl.classList.add('active');
+                    statusEl.textContent = listeningMsg;
+                }
+            }
+
+            function clearListeningStatus() {
+                if (statusEl && statusEl.textContent === listeningMsg) {
+                    statusEl.classList.remove('active');
+                    statusEl.textContent = '';
+                }
+            }
+
+            recognition.onresult = function (e) {
+                var text = (e.results[0] && e.results[0][0] && e.results[0][0].transcript) || '';
+                text = text.trim();
+                if (!text) return;
+
+                input.value = text;
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                if (window.jQuery) window.jQuery(input).trigger('input');
+
+                if (searchForm && typeof searchForm.requestSubmit === 'function') {
+                    if (statusEl) {
+                        statusEl.classList.add('active');
+                        statusEl.textContent = 'Getting recommendations…';
+                    }
+                    if (searchButton) searchButton.classList.add('loading');
+                    searchForm.requestSubmit();
+                } else if (searchForm) {
+                    searchForm.submit();
+                }
+            };
+
+            recognition.onerror = function (e) {
+                listening = false;
+                btn.classList.remove('listening');
+                btn.setAttribute('aria-pressed', 'false');
+                if (statusEl && e.error !== 'aborted') {
+                    statusEl.classList.remove('active');
+                    if (e.error === 'not-allowed') {
+                        statusEl.textContent = 'Microphone access denied. Allow the mic to use voice search.';
+                    } else if (e.error === 'no-speech') {
+                        statusEl.textContent = 'No speech heard. Try again.';
+                    } else {
+                        statusEl.textContent = 'Voice search paused. Try again.';
+                    }
+                }
+            };
+
+            recognition.onend = function () {
+                listening = false;
+                btn.classList.remove('listening');
+                btn.setAttribute('aria-pressed', 'false');
+                clearListeningStatus();
+            };
+
+            btn.addEventListener('click', function () {
+                if (listening) {
+                    try { recognition.stop(); } catch (err) {}
+                    listening = false;
+                    btn.classList.remove('listening');
+                    btn.setAttribute('aria-pressed', 'false');
+                    clearListeningStatus();
+                    return;
+                }
+                try {
+                    setListening(true);
+                    recognition.start();
+                } catch (err) {
+                    listening = false;
+                    btn.classList.remove('listening');
+                    btn.setAttribute('aria-pressed', 'false');
+                    clearListeningStatus();
+                    if (statusEl) statusEl.textContent = 'Could not start voice search. Try again.';
                 }
             });
-
-            // Form submission with loading state
-            $('#searchForm').on('submit', function() {
-                var button = $('#searchButton');
-                button.addClass('loading');
-                button.text('Searching...');
-            });
-
-            // Auto-focus on load
-            $('#movie_name').focus();
-        });
+        })();
     </script>
+
 </body>
 </html>

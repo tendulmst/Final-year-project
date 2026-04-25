@@ -302,6 +302,7 @@ df, sim_matrix = trainer.train(
 | `/` | POST | Submit movie search and get recommendations |
 | `/api/search/` | GET | Search movies (autocomplete) |
 | `/api/health/` | GET | Health check endpoint |
+| `/api/sentiment/` | POST | Sentiment analysis for pasted reviews (positive/neutral/negative) |
 
 ### Search Movies
 

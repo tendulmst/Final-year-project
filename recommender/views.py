@@ -6,6 +6,7 @@ import logging
 import os
 import threading
 from pathlib import Path
+from turtle import title
 from typing import Dict, List, Optional
 from difflib import get_close_matches
 
@@ -17,6 +18,12 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+
+from .fake_review import analyze_review_text
+from .chat_assistant import handle_message
+
+ 
 
 logger = logging.getLogger(__name__)
 
@@ -80,6 +87,7 @@ class MovieRecommender:
         """Find closest matching movie title"""
         matches = get_close_matches(title, self.title_to_idx.keys(), n=1, cutoff=0.6)
         return matches[0] if matches else None
+
     
     def search_movies(self, query: str, n: int = 20) -> List[str]:
         """Search movies by partial title"""
@@ -358,3 +366,152 @@ def health_check(request):
             'status': 'unhealthy',
             'error': str(e)
         }, status=503)
+
+
+@require_http_methods(["GET"])
+def fake_review_page(request):
+    """UI page for fake review detection."""
+    return render(request, "recommender/fake_review.html")
+
+
+@require_http_methods(["GET"])
+def chat_assistant_page(request):
+    """UI page for AI Chatbot Movie Assistant."""
+    # Start loading model early so the assistant is responsive.
+    _start_model_loading()
+    return render(request, "recommender/assistant.html")
+
+
+def _json_body(request):
+    try:
+        return json.loads((request.body or b"{}").decode("utf-8"))
+    except Exception:
+        return None
+
+
+@require_http_methods(["POST"])
+def fake_review_api(request):
+    """API: analyze a review and return fake/real + reasons."""
+    payload = _json_body(request)
+    if payload is None:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    text = (payload.get("text") or "").strip()
+    result = analyze_review_text(text)
+    return JsonResponse(
+        {
+            "label": result.label,
+            "score": result.score,
+            "reasons": result.reasons,
+            "features": result.features,
+        }
+    )
+
+
+@require_http_methods(["POST"])
+def watched_api(request):
+    """API: store watched toggle in session (no DB required)."""
+    payload = _json_body(request)
+    if payload is None:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    title = (payload.get("title") or "").strip()
+    watched = payload.get("watched", None)
+    if not title or not isinstance(watched, bool):
+        return JsonResponse({"error": "Expected: { title: string, watched: boolean }"}, status=400)
+
+    watched_set = set(request.session.get("watched_titles", []))
+    if watched:
+        watched_set.add(title)
+    else:
+        watched_set.discard(title)
+    request.session["watched_titles"] = sorted(watched_set)
+    request.session.modified = True
+
+    return JsonResponse({"ok": True, "title": title, "watched": watched})
+
+
+@require_http_methods(["POST"])
+def review_api(request):
+    """
+    API: accept rating/review and run fake review detection.
+    Stored in session for demo purposes (project currently has no DB models).
+    """
+    payload = _json_body(request)
+    if payload is None:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    title = (payload.get("title") or "").strip()
+    rating = (payload.get("rating") or "").strip()
+    review = (payload.get("review") or "").strip()
+
+    if not title:
+        return JsonResponse({"error": "Missing title"}, status=400)
+
+    # Rating is optional, but if provided must be 1..5
+    if rating:
+        try:
+            rating_int = int(rating)
+        except Exception:
+            return JsonResponse({"error": "Rating must be an integer 1..5"}, status=400)
+        if rating_int < 1 or rating_int > 5:
+            return JsonResponse({"error": "Rating must be between 1 and 5"}, status=400)
+    else:
+        rating_int = None
+
+    detection = analyze_review_text(review)
+
+    reviews = request.session.get("reviews", {})
+    if not isinstance(reviews, dict):
+        reviews = {}
+
+    reviews[title] = {
+        "rating": rating_int,
+        "review": review,
+        "fake_review": {
+            "label": detection.label,
+            "score": detection.score,
+            "reasons": detection.reasons,
+        },
+    }
+    request.session["reviews"] = reviews
+    request.session.modified = True
+
+    return JsonResponse(
+        {
+            "ok": True,
+            "title": title,
+            "saved": True,
+            "fake_review": {
+                "label": detection.label,
+                "score": detection.score,
+                "reasons": detection.reasons,
+            },
+        }
+    )
+
+
+@require_http_methods(["POST"])
+def chat_assistant_api(request):
+    """API: chat assistant using the local recommender model."""
+    payload = _json_body(request)
+    if payload is None:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    message = (payload.get("message") or "").strip()
+    if not message:
+        return JsonResponse({"error": "Missing message"}, status=400)
+
+    # Ensure model starts loading (if not already).
+    _start_model_loading()
+    recommender = _get_recommender()
+
+    resp = handle_message(recommender, message, n=10)
+    return JsonResponse(
+        {
+            "ok": True,
+            "intent": resp.intent,
+            "text": resp.text,
+            "items": resp.items,
+        }
+    )

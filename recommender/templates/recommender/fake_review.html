@@ -1,0 +1,237 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fake Review Detector | Movie Recommendation System</title>
+  <link rel="shortcut icon" href="{% static 'logo.ico' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: rgba(30, 41, 59, 0.72);
+      --border: rgba(255,255,255,0.12);
+      --text: #f1f5f9;
+      --muted: #cbd5e1;
+      --good: #10b981;
+      --bad: #ef4444;
+      --accent: rgb(146, 224, 232);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--bg) 0%, #1a1f3a 100%);
+      background-image: url("{% static 'images/back4.jpg' %}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1rem 3rem;
+    }
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
+    .title {
+      font-size: clamp(1.6rem, 3.5vw, 2.3rem);
+      font-weight: 800;
+      margin: 0;
+      color: var(--accent);
+      text-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.1rem;
+      border-radius: 999px;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 700;
+      background: rgba(0,0,0,0.18);
+      backdrop-filter: blur(10px);
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      backdrop-filter: blur(14px);
+    }
+    .hint { color: var(--muted); margin: 0.4rem 0 1rem; }
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      resize: vertical;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.55);
+      color: var(--text);
+      padding: 0.9rem 1rem;
+      font-size: 1rem;
+      outline: none;
+    }
+    textarea:focus { border-color: rgba(146, 224, 232, 0.55); box-shadow: 0 0 0 3px rgba(146,224,232,0.14); }
+    .row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 0.85rem;
+      align-items: center;
+    }
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 0.75rem 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      background: var(--accent);
+      color: #071018;
+    }
+    .btn.secondary {
+      background: rgba(255,255,255,0.06);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .result {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.18);
+      display: none;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      font-size: 0.9rem;
+    }
+    .badge.good { background: rgba(16, 185, 129, 0.15); color: #86efac; border: 1px solid rgba(16,185,129,0.35); }
+    .badge.bad { background: rgba(239, 68, 68, 0.14); color: #fecaca; border: 1px solid rgba(239,68,68,0.35); }
+    .meta { margin-top: 0.65rem; color: var(--muted); font-weight: 600; }
+    .reasons { margin: 0.75rem 0 0; padding-left: 1.2rem; color: var(--muted); }
+    .error { margin-top: 0.85rem; color: #fca5a5; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <h1 class="title">Fake Review Detector</h1>
+      <a class="back" href="/">← Back to recommendations</a>
+    </div>
+
+    <div class="panel">
+      <p class="hint">Paste a movie review and we’ll score how likely it is to be fake (rule-based, offline).</p>
+
+      <textarea id="reviewText" placeholder="Example: This movie is AMAZING!!! Best movie ever!!! Click www.example.com for free tickets..."></textarea>
+      <div class="row">
+        <button class="btn" id="analyzeBtn">Analyze review</button>
+        <button class="btn secondary" id="clearBtn" type="button">Clear</button>
+        <span id="err" class="error" aria-live="polite"></span>
+      </div>
+
+      <div id="result" class="result" role="status" aria-live="polite">
+        <div id="badgeWrap"></div>
+        <div id="meta" class="meta"></div>
+        <ul id="reasons" class="reasons"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function clamp01(x) { return Math.max(0, Math.min(1, x)); }
+    function pct(x) { return Math.round(clamp01(x) * 100); }
+
+    async function postJson(url, payload) {
+      const csrftoken = (document.cookie.split(';').map(s => s.trim()).find(s => s.startsWith('csrftoken=')) || '').split('=')[1] || '';
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': decodeURIComponent(csrftoken) },
+        body: JSON.stringify(payload || {})
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data && data.error ? data.error : 'Request failed');
+      return data;
+    }
+
+    const textEl = document.getElementById('reviewText');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const errEl = document.getElementById('err');
+    const resultEl = document.getElementById('result');
+    const badgeWrap = document.getElementById('badgeWrap');
+    const metaEl = document.getElementById('meta');
+    const reasonsEl = document.getElementById('reasons');
+
+    function setError(msg) {
+      errEl.textContent = msg || '';
+    }
+
+    function renderResult(data) {
+      const label = (data.label || '').toLowerCase();
+      const score = typeof data.score === 'number' ? data.score : 0;
+      const isFake = label === 'fake';
+
+      badgeWrap.innerHTML = '<span class="badge ' + (isFake ? 'bad' : 'good') + '">' +
+        (isFake ? '⚠ Likely Fake' : '✓ Likely Real') + '</span>';
+
+      metaEl.textContent = 'Suspicion score: ' + pct(score) + '%';
+
+      reasonsEl.innerHTML = '';
+      (data.reasons || []).forEach(r => {
+        const li = document.createElement('li');
+        li.textContent = r;
+        reasonsEl.appendChild(li);
+      });
+
+      resultEl.style.display = 'block';
+    }
+
+    analyzeBtn.addEventListener('click', async () => {
+      setError('');
+      const text = (textEl.value || '').trim();
+      if (!text) return setError('Please paste a review first.');
+      analyzeBtn.disabled = true;
+      try {
+        const data = await postJson('/api/fake-review/', { text });
+        renderResult(data);
+      } catch (e) {
+        setError(e && e.message ? e.message : 'Could not analyze.');
+      } finally {
+        analyzeBtn.disabled = false;
+      }
+    });
+
+    clearBtn.addEventListener('click', () => {
+      textEl.value = '';
+      setError('');
+      resultEl.style.display = 'none';
+      badgeWrap.innerHTML = '';
+      metaEl.textContent = '';
+      reasonsEl.innerHTML = '';
+    });
+  </script>
+</body>
+</html>
+

@@ -183,7 +183,7 @@ class MovieRecommenderTrainer:
           df['imdb_id'] = df['tconst']
 
         df = df.reset_index(drop=True)
-        df = df.head(5000)   # Reduce dataset to avoid memory crash
+        df = df.head(10000)   # Reduce dataset to avoid memory crash
         
         print(f"Processed {len(df)} valid movies")
         return df
